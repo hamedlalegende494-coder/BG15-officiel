@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Création du compte propriétaire</title>
+<style>
+  body{
+    font-family: -apple-system, sans-serif;
+    background:#0d0d0c;
+    color:#f1ece0;
+    padding:24px;
+    max-width:480px;
+    margin:0 auto;
+  }
+  h1{ font-size:20px; color:#d4af37; }
+  button{
+    width:100%;
+    padding:16px;
+    font-size:15px;
+    background:#d4af37;
+    color:#141208;
+    font-weight:600;
+    border:none;
+    border-radius:6px;
+    margin-top:16px;
+  }
+  #result{
+    margin-top:20px;
+    padding:16px;
+    background:#161410;
+    border-radius:6px;
+    word-break:break-word;
+    font-family:monospace;
+    font-size:14px;
+    display:none;
+  }
+  #result.show{ display:block; }
+  .error{ color:#d9534f; }
+  .ok{ color:#8fd19e; }
+</style>
+</head>
+<body>
+  <h1>Création du compte propriétaire — BG15 Officiel</h1>
+  <p>Cliquez une seule fois sur le bouton ci-dessous. Il va créer votre compte de connexion dans Firebase, avec l'email et le mot de passe déjà renseignés.</p>
+  <button id="go">Créer le compte propriétaire</button>
+  <div id="result"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAz4JFxO6cRns9VaCS8Kc5Lb1wrGI4PyNo",
+    authDomain: "bg15-officiel.firebaseapp.com",
+    projectId: "bg15-officiel",
+    storageBucket: "bg15-officiel.firebasestorage.app",
+    messagingSenderId: "787571422308",
+    appId: "1:787571422308:web:9293824b00504b62f41b71"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  const OWNER_EMAIL = 'bamba@gmail.com';
+  const OWNER_PASSWORD = 'Maman2005@@';
+
+  document.getElementById('go').onclick = async function(){
+    const btn = document.getElementById('go');
+    const resultEl = document.getElementById('result');
+    btn.disabled = true;
+    btn.textContent = 'Création en cours...';
+    resultEl.classList.add('show');
+
+    try{
+      await auth.createUserWithEmailAndPassword(OWNER_EMAIL, OWNER_PASSWORD);
+      resultEl.innerHTML = `<p class="ok">✅ Compte créé avec succès !</p><p>Vous pouvez maintenant vous connecter dans la boutique avec :</p><p>Email : ${OWNER_EMAIL}<br>Mot de passe : (celui que vous avez choisi)</p><p style="margin-top:12px;">Vous pouvez supprimer cette page du dépôt GitHub, elle ne sert plus.</p>`;
+      btn.style.display = 'none';
+    }catch(err){
+      if(err.code === 'auth/email-already-in-use'){
+        resultEl.innerHTML = `<p class="ok">✅ Ce compte existe déjà — tout est prêt, vous pouvez vous connecter normalement dans la boutique.</p>`;
+        btn.style.display = 'none';
+      }else{
+        resultEl.innerHTML = `<p class="error">❌ Erreur : ${err.message}</p>`;
+        btn.disabled = false;
+        btn.textContent = 'Réessayer';
+      }
+    }
+  };
+</script>
+</body>
+</html>
